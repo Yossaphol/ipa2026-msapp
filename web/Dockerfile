@@ -3,6 +3,8 @@ WORKDIR /home/myapp
 COPY ./templates/* /home/myapp/templates/
 COPY ./static/* /home/myapp/static/
 COPY ./app.py /home/myapp/
+COPY requirements.txt .
 RUN pip install flask
+RUN pip install -r requirements.txt
 CMD ["python", "/home/myapp/app.py"]
 EXPOSE 8080
