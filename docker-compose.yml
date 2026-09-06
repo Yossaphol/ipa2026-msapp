@@ -1,24 +1,42 @@
 services:
+
   web:
     build: ./web
     ports:
       - "8080:8080"
+    environment:
+      MONGO_URI: mongodb://mongo:27017
+      DB_NAME: routerdb
     depends_on:
       - mongo
-    networks:
-      - app-net
 
   mongo:
     image: mongo:6
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-data:/data/db
-    networks:
-      - app-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  scheduler:
+    build: ./scheduler
+
+    environment:
+      MONGO_URI: ${MONGO_URI}
+      DB_NAME: ${DB_NAME}
+      RABBITMQ_HOST: ${RABBITMQ_HOST}
+      RABBITMQ_USER: ${RABBITMQ_USER}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+
+    depends_on:
+      - mongo
+      - rabbitmq
 
 volumes:
   mongo-data:
-
-networks:
-  app-net:
