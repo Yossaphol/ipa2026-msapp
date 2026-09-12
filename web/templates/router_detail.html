@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <title>Router Detail</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 4px 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #a4b7cc;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Router: {{ router_ip }}</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Interface</th>
+                <th>IP Address</th>
+                <th>Status</th>
+                <th>Protocol</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+                {% for intf in log.interfaces %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>{{ intf.interface or intf.intf }}</td>
+                    <td>{{ intf.ip_address or intf.ipaddr }}</td>
+                    <td>{{ intf.status }}</td>
+                    <td>{{ intf.proto or intf.protocol }}</td>
+                </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>

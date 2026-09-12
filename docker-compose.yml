@@ -9,11 +9,15 @@ services:
       DB_NAME: routerdb
     depends_on:
       - mongo
+    networks:
+      - app-net
 
   mongo:
     image: mongo:6
     volumes:
       - mongo-data:/data/db
+    networks:
+      - app-net
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -23,6 +27,8 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    networks:
+      - app-net
 
   scheduler:
     build: ./scheduler
@@ -37,6 +43,8 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+    networks:
+      - app-net
 
   worker:
     build:
@@ -44,17 +52,22 @@ services:
       dockerfile: Dockerfile
     restart: always
     deploy:
-      replicas: 3
+      replicas: 1
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-      - MONGO_URI=mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongo:27017/?authSource=admin
-      - DB_NAME=ipa2026
+      - MONGO_URI=mongodb://mongo:27017
+      - DB_NAME=routerdb
       - PYTHONUNBUFFERED=1
     depends_on:
       - rabbitmq
       - mongo
-
+    networks:
+      - app-net
+    
 
 volumes:
   mongo-data:
+
+networks:
+  app-net:
